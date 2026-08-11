@@ -14,6 +14,7 @@ from urllib.request import urlopen
 import cfgrib
 import numpy as np
 import rasterio
+import truststore
 import zarr
 from ecmwf.opendata import Client as ECMWFClient
 from obstore import put
@@ -25,6 +26,8 @@ from tilebox.workflows import ExecutionContext, Runner, Task
 from tilebox.workflows.cache import LocalFileSystemCache
 from zarr.codecs import BloscCodec
 from zarr.storage import ObjectStore as ZarrObjectStore
+
+truststore.inject_into_ssl()
 
 RESULTS_URI = os.environ.get(
     "SOLAR_ECLIPSE_RESULTS_URI", str(Path.home() / "solar-eclipse-weather-results")
@@ -204,6 +207,7 @@ def _preferred_cache_dir() -> Path:
         os.environ.get("SOLAR_ECLIPSE_CACHE_DIR"),
         os.environ.get("CACHE_DIR"),
         "/cache",
+        str(Path.home() / ".cache"),
     ):
         if not value:
             continue
