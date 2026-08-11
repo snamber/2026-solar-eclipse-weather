@@ -5,6 +5,16 @@ solar eclipse. It produces a cloud-backed Zarr analysis cube, a seven-band Cloud
 GeoTIFF, a GeoJSON totality corridor and centerline, a JSON manifest, and a
 static Leaflet viewer.
 
+## Live map
+
+**[Open the interactive 12 August 2026 eclipse cloud outlook →](https://storage.googleapis.com/tilebox-hosted-compute-us-central1-results/solar-eclipse-weather/2026-08-12/ecmwf-20260811-00z/index.html)**
+
+| Cloud outlook across Europe | Maximum solar obscuration |
+| --- | --- |
+| [![Cloud outlook across Europe](docs/screenshots/cloud-outlook-europe.webp)](https://storage.googleapis.com/tilebox-hosted-compute-us-central1-results/solar-eclipse-weather/2026-08-12/ecmwf-20260811-00z/index.html) | [![Maximum solar obscuration](docs/screenshots/eclipse-obscuration.webp)](https://storage.googleapis.com/tilebox-hosted-compute-us-central1-results/solar-eclipse-weather/2026-08-12/ecmwf-20260811-00z/index.html) |
+| Cloud outlook along the path over Spain | Distributed workflow execution |
+| [![Cloud outlook over Spain](docs/screenshots/cloud-outlook-spain.webp)](https://storage.googleapis.com/tilebox-hosted-compute-us-central1-results/solar-eclipse-weather/2026-08-12/ecmwf-20260811-00z/index.html) | ![Tilebox workflow execution](docs/screenshots/job-execution.webp) |
+
 ## Data and method
 
 - **Weather:** ECMWF IFS 0.25° open data, parameter `tcc` (total cloud cover), licensed
