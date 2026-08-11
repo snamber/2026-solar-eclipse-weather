@@ -1,0 +1,27 @@
+[project]
+name = "solar-eclipse-weather"
+version = "0.1.0"
+description = "Map forecast cloud cover across the 12 August 2026 solar eclipse"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "cfgrib>=0.9.15.1",
+  "eccodes>=2.47.0",
+  "eccodeslib>=2.48.0.26",
+  "ecmwf-opendata>=0.3.34",
+  "numpy>=2.3",
+  "obstore>=0.11",
+  "rasterio>=1.4",
+  "skyfield>=1.55",
+  "tilebox",
+  "zarr>=3.3.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "ruff>=0.16.2",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]

@@ -1,0 +1,10 @@
+.cache/
+.env
+.pytest_cache/
+.ruff_cache/
+.venv/
+*.py[cod]
+__pycache__/
+de440s.bsp
+outputs/
+solar-eclipse-weather-*.tar.zst

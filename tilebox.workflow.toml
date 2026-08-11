@@ -1,0 +1,15 @@
+[workflow]
+slug = "solar-eclipse-weather-Dxe3rJ81nrCtRf"
+root = "."
+runner = "runner:runner"
+
+[build]
+include = [
+  "pyproject.toml",
+  "uv.lock",
+  "README.md",
+  "**/*.py",
+]
+
+[targets.gcp]
+clusters = ["gcp-Drv6L7Li4t7Yvk"]
