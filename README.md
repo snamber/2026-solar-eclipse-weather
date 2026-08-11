@@ -5,6 +5,9 @@ solar eclipse. It produces a cloud-backed Zarr analysis cube, a seven-band Cloud
 GeoTIFF, a GeoJSON totality corridor and centerline, a JSON manifest, and a
 static Leaflet viewer.
 
+Read the [full Amp implementation thread](https://ampcode.com/threads/T-019ff051-7925-71e9-a525-3006cc9ba634)
+for the design process, implementation, failed runs, debugging, and validation.
+
 ## Live map
 
 **[Open the interactive 12 August 2026 eclipse cloud outlook →](https://storage.googleapis.com/tilebox-hosted-compute-us-central1-results/solar-eclipse-weather/2026-08-12/ecmwf-20260811-00z/index.html)**
