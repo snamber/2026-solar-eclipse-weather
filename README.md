@@ -56,10 +56,17 @@ Install [uv](https://docs.astral.sh/uv/) and the
 export TILEBOX_API_KEY="..."
 ```
 
-Start the workflow runner:
+Publish and deploy the workflow to your default cluster after each code change:
 
 ```bash
-uv run runner.py
+tilebox workflow publish-release --json
+tilebox workflow deploy-release --latest --json
+```
+
+Start a local runner for that cluster:
+
+```bash
+tilebox runner start
 ```
 
 In a second terminal, submit the workflow:
@@ -79,11 +86,11 @@ tilebox job submit \
 ```
 
 The workflow downloads the free ECMWF forecast data and JPL ephemeris on first use. It
-writes its Zarr cube, COG, GeoJSON, manifest, and viewer to `outputs/` by default. Serve the
-result locally with:
+writes its Zarr cube, COG, GeoJSON, manifest, and viewer to
+`~/solar-eclipse-weather-results/` by default. Serve the result locally with:
 
 ```bash
-uv run python -m http.server 8000 --directory outputs/solar-eclipse-weather/2026-08-12/ecmwf-20260811-00z
+uv run python -m http.server 8000 --directory ~/solar-eclipse-weather-results/solar-eclipse-weather/2026-08-12/ecmwf-20260811-00z
 ```
 
 Then open <http://localhost:8000>. To use shared object storage instead, set

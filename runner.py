@@ -21,12 +21,14 @@ from obstore.store import GCSStore, LocalStore, ObjectStore
 from rasterio.features import shapes as raster_shapes
 from skyfield.api import load, load_file, wgs84
 from skyfield.constants import AU_KM
-from tilebox.workflows import Client, ExecutionContext, Runner, Task
+from tilebox.workflows import ExecutionContext, Runner, Task
 from tilebox.workflows.cache import LocalFileSystemCache
 from zarr.codecs import BloscCodec
 from zarr.storage import ObjectStore as ZarrObjectStore
 
-RESULTS_URI = os.environ.get("SOLAR_ECLIPSE_RESULTS_URI", "outputs")
+RESULTS_URI = os.environ.get(
+    "SOLAR_ECLIPSE_RESULTS_URI", str(Path.home() / "solar-eclipse-weather-results")
+)
 PUBLIC_RESULTS_BASE = os.environ.get("SOLAR_ECLIPSE_PUBLIC_RESULTS_BASE")
 OUTPUT_HEIGHT = 360
 OUTPUT_WIDTH = 1440
@@ -1491,7 +1493,3 @@ runner = Runner(
     ],
     cache=LocalFileSystemCache(_preferred_cache_dir()),
 )
-
-
-if __name__ == "__main__":
-    runner.connect_to(Client()).run_forever()
