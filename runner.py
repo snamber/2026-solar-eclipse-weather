@@ -26,8 +26,8 @@ from tilebox.workflows.cache import LocalFileSystemCache
 from zarr.codecs import BloscCodec
 from zarr.storage import ObjectStore as ZarrObjectStore
 
-RESULTS_BUCKET = "tilebox-hosted-compute-us-central1-results"
-PUBLIC_RESULTS_BASE = f"https://storage.googleapis.com/{RESULTS_BUCKET}"
+RESULTS_URI = os.environ.get("SOLAR_ECLIPSE_RESULTS_URI", "outputs")
+PUBLIC_RESULTS_BASE = os.environ.get("SOLAR_ECLIPSE_PUBLIC_RESULTS_BASE")
 OUTPUT_HEIGHT = 360
 OUTPUT_WIDTH = 1440
 RESOLUTION_DEGREES = 0.25
@@ -227,12 +227,24 @@ def _normalized_prefix(prefix: str) -> str:
 
 
 def _cube_uri(prefix: str) -> str:
-    return f"gs://{RESULTS_BUCKET}/{_normalized_prefix(prefix)}/eclipse_weather.zarr"
+    path = f"{_normalized_prefix(prefix)}/eclipse_weather.zarr"
+    if urlparse(RESULTS_URI).scheme:
+        return f"{RESULTS_URI.rstrip('/')}/{path}"
+    return str(Path(RESULTS_URI) / path)
 
 
 def _public_url(prefix: str, filename: str) -> str:
     key = f"{_normalized_prefix(prefix)}/{filename}"
-    return f"{PUBLIC_RESULTS_BASE}/{quote(key, safe='/')}"
+    if PUBLIC_RESULTS_BASE:
+        return f"{PUBLIC_RESULTS_BASE.rstrip('/')}/{quote(key, safe='/')}"
+
+    parsed = urlparse(RESULTS_URI)
+    if parsed.scheme == "gs":
+        path = "/".join(part for part in (parsed.path.strip("/"), key) if part)
+        return f"https://storage.googleapis.com/{parsed.netloc}/{quote(path, safe='/')}"
+
+    root = Path(parsed.path if parsed.scheme == "file" else RESULTS_URI)
+    return (root / key).resolve().as_uri()
 
 
 @lru_cache
@@ -253,23 +265,21 @@ def _zarr_store(uri: str, *, read_only: bool = False) -> ZarrObjectStore:
 
 
 @lru_cache
-def _results_store() -> GCSStore:
-    return GCSStore(bucket=RESULTS_BUCKET)
+def _results_store() -> ObjectStore:
+    return _object_store(RESULTS_URI)
 
 
 def _upload_result(
     prefix: str, filename: str, content: Path | bytes, content_type: str
 ) -> str:
     key = f"{_normalized_prefix(prefix)}/{filename}"
-    put(
-        _results_store(),
-        key,
-        content,
-        attributes={
+    options = {}
+    if urlparse(RESULTS_URI).scheme == "gs":
+        options["attributes"] = {
             "Content-Type": content_type,
             "Cache-Control": "public, max-age=300",
-        },
-    )
+        }
+    put(_results_store(), key, content, **options)
     return _public_url(prefix, filename)
 
 
@@ -1484,4 +1494,4 @@ runner = Runner(
 
 
 if __name__ == "__main__":
-    runner.connect_to(Client(), cluster="gcp-Drv6L7Li4t7Yvk").run_forever()
+    runner.connect_to(Client()).run_forever()

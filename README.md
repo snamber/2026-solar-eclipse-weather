@@ -50,12 +50,10 @@ The COG bands are:
 ## Run locally
 
 Install [uv](https://docs.astral.sh/uv/) and the
-[Tilebox CLI](https://docs.tilebox.com/cli), provide a `TILEBOX_API_KEY`, and authenticate
-with Google Cloud once:
+[Tilebox CLI](https://docs.tilebox.com/cli), then provide a `TILEBOX_API_KEY`:
 
 ```bash
 export TILEBOX_API_KEY="..."
-gcloud auth application-default login
 ```
 
 Start the workflow runner:
@@ -71,20 +69,26 @@ tilebox job submit \
   --name eclipse-weather-2026-08-12 \
   --task tilebox.com/solar-eclipse-weather/RunEclipseWeather \
   --version v1.3 \
-  --cluster gcp-Drv6L7Li4t7Yvk \
   --input '{
     "event_date":"2026-08-12",
     "forecast_run_date":"2026-08-11",
     "forecast_run_hour":0,
-    "output_prefix":"solar-eclipse-weather/2026-08-12/ecmwf-20260811-00z",
-    "forecast_source":"google",
-    "verify_tls":true
+    "output_prefix":"solar-eclipse-weather/2026-08-12/ecmwf-20260811-00z"
   }' \
   --wait
 ```
 
 The workflow downloads the free ECMWF forecast data and JPL ephemeris on first use. It
-requires access to the `tilebox-hosted-compute-us-central1-results` GCS bucket and writes
-the public viewer to `index.html` under the requested output prefix.
+writes its Zarr cube, COG, GeoJSON, manifest, and viewer to `outputs/` by default. Serve the
+result locally with:
+
+```bash
+uv run python -m http.server 8000 --directory outputs/solar-eclipse-weather/2026-08-12/ecmwf-20260811-00z
+```
+
+Then open <http://localhost:8000>. To use shared object storage instead, set
+`SOLAR_ECLIPSE_RESULTS_URI=gs://your-bucket` and authenticate with Google Cloud before
+starting the runner. A custom HTTP base URL can be set with
+`SOLAR_ECLIPSE_PUBLIC_RESULTS_BASE`.
 
 Run the test suite with `uv run pytest`.

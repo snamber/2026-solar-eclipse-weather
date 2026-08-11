@@ -6,6 +6,7 @@ import numpy as np
 import rasterio
 import zarr
 
+import runner as runner_module
 from runner import (
     NODATA_UINT16,
     _circle_overlap_fraction,
@@ -198,3 +199,19 @@ def test_viewer_references_relative_cog() -> None:
     assert "rasterLayer.updateColors" in html
     assert "georaster, opacity: 0.65" in html
     assert "Path of totality" in html
+
+
+def test_results_default_to_local_files(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setattr(runner_module, "RESULTS_URI", str(tmp_path))
+    runner_module._results_store.cache_clear()
+
+    result_url = runner_module._upload_result(
+        "eclipse/run", "manifest.json", b"{}", "application/json"
+    )
+
+    result_path = tmp_path / "eclipse/run/manifest.json"
+    assert result_path.read_bytes() == b"{}"
+    assert result_url == result_path.as_uri()
+    assert runner_module._cube_uri("eclipse/run") == str(
+        tmp_path / "eclipse/run/eclipse_weather.zarr"
+    )
